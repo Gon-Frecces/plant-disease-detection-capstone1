@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model files
+*.pth
+*.pt
+*.onnx
+
+# Uploaded images
+static/uploads/
+
+# Large datasets
+data/
+PlantVillage/
+unidentified/
+
+# Logs
+*.log
