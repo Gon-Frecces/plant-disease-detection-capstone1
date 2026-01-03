@@ -1,9 +1,7 @@
-# Git
+# Update .dockerignore - REMOVE model exclusions
+cat > .dockerignore << 'EOF'
 .git
 .gitignore
-.gitattributes
-
-# Python
 __pycache__
 *.pyc
 *.pyo
@@ -14,72 +12,36 @@ __pycache__
 venv/
 env/
 ENV/
-.pytest_cache
-.coverage
-htmlcov/
-*.egg-info/
-dist/
-build/
-
-models/plant_disease_classifier.pth
-models/
-*.pth
-*.pt
-*.bin
-
-# IDE
+*.log
+*.tmp
+*.temp
+.DS_Store
 .vscode/
 .idea/
 *.swp
 *.swo
-*.swn
 *.iml
-.DS_Store
-
-# Logs
-*.log
-*.tmp
-*.temp
-
-# Documentation
 README.md
-LICENSE
-*.pdf
-*.docx
-*.xlsx
 
-# Data files (EXCLUDE LARGE FILES!)
-*.csv
-*.pkl
-*.pickle
+# KEEP THESE EXCLUSIONS but REMOVE model ones:
+# Remove these lines:
+# models/
+# *.pth
+# *.pt
+
+# Keep excluding large data files
 *.h5
 *.hdf5
 *.npy
 *.npz
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.tiff
 *.mp4
 *.avi
 *.mov
-
-# Model files (MOST IMPORTANT - EXCLUDE!)
-model/
-models/
-weights/
-checkpoints/
-saved_models/
+*.csv
+*.xlsx
 dataset/
-data/
 datasets/
 train/
 test/
 validation/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-notebooks/
+EOF
