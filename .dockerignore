@@ -1,5 +1,9 @@
+# Git
 .git
 .gitignore
+.gitattributes
+
+# Python
 __pycache__
 *.pyc
 *.pyo
@@ -10,32 +14,72 @@ __pycache__
 venv/
 env/
 ENV/
+.pytest_cache
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+models/plant_disease_classifier.pth
+models/
+*.pth
+*.pt
+*.bin
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.iml
+.DS_Store
+
+# Logs
 *.log
 *.tmp
 *.temp
-Dockerfile
-.dockerignore
+
+# Documentation
 README.md
-tests/
-test/
-.coverage
-htmlcov/
-dist/
-build/
-*.egg-info/
-.idea
-.vscode
-*.iml
-*.swp
-*.swo
-# Add large data files if you have them:
+LICENSE
+*.pdf
+*.docx
+*.xlsx
+
+# Data files (EXCLUDE LARGE FILES!)
 *.csv
 *.pkl
+*.pickle
 *.h5
 *.hdf5
 *.npy
 *.npz
 *.jpg
+*.jpeg
 *.png
+*.gif
+*.bmp
+*.tiff
 *.mp4
+*.avi
+*.mov
+
+# Model files (MOST IMPORTANT - EXCLUDE!)
 model/
+models/
+weights/
+checkpoints/
+saved_models/
+dataset/
+data/
+datasets/
+train/
+test/
+validation/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+notebooks/
