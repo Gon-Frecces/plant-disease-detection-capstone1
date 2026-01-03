@@ -73,22 +73,22 @@ Multiple experiments were conducted:
 
 ### Training Metrics
 #### Accuracy over epochs
-![Accuracy Curve](assets/accuracy.png)
+![Accuracy Curve](asset/accuracy.png)
 
 #### Loss over epochs
-![Loss Curve](assets/loss.png)
+![Loss Curve](asset/loss.png)
 
 ---
 
 ## 📈 Model Evaluation
 
 ### Classification Report
-![Classification Report](assets/classification_report.png)
+![Classification Report](asset/classification_report.png)
 
 ### Confusion Matrix
 (All values shown explicitly for clarity)
 
-![Confusion Matrix](assets/confusion_matrix.png)
+![Confusion Matrix](asset/confusion_matrix.png)
 
 ---
 
