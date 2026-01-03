@@ -1,4 +1,4 @@
-# Dockerfile - WITH model included
+# Dockerfile - Pre-download PyTorch weights
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -7,7 +7,13 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
+    wget \
     && rm -rf /var/lib/apt/lists/*
+
+# Pre-download PyTorch EfficientNet weights to cache
+RUN mkdir -p /root/.cache/torch/hub/checkpoints && \
+    wget -q https://download.pytorch.org/models/efficientnet_b0_rwightman-3dd342df.pth \
+    -O /root/.cache/torch/hub/checkpoints/efficientnet_b0_rwightman-3dd342df.pth
 
 # Install PyTorch CPU version
 RUN pip install --no-cache-dir \
@@ -25,24 +31,25 @@ COPY . .
 # Create model directory if needed
 RUN mkdir -p models static/uploads
 
-# Verify model is included
-RUN echo "Model file check:" && \
-    if [ -f "models/plant_disease_classifier.pth" ]; then \
-        ls -lh models/plant_disease_classifier.pth && \
-        echo "✓ Model file found"; \
-    else \
-        echo "❌ Model file NOT found!" && exit 1; \
-    fi
+# Verify files exist
+RUN echo "=== File Verification ===" && \
+    echo "Model file:" && ls -lh models/plant_disease_classifier.pth && \
+    echo "PyTorch weights cached:" && ls -lh /root/.cache/torch/hub/checkpoints/efficientnet_b0_rwightman-3dd342df.pth
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=5000
 ENV HOST=0.0.0.0
+ENV TORCH_HOME=/tmp/torch  
+
+# Create non-root user (Railway recommends)
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app && \
+    chown -R appuser:appuser /root/.cache 2>/dev/null || true
+
+USER appuser
 
 EXPOSE 5000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD python -c "import requests; r = requests.get('http://localhost:5000/health', timeout=5); exit(0 if r.status_code == 200 else 1)"
-
+# Simple CMD
 CMD ["python", "predict.py"]

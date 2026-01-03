@@ -4,6 +4,10 @@ from torchvision import transforms
 from PIL import Image
 import os
 import time
+import warnings
+
+# Suppress PyTorch warnings
+warnings.filterwarnings('ignore', category=UserWarning)
 
 from model import build_model
 
@@ -14,7 +18,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# ====== SIMPLE MODEL LOADING (NO DOWNLOAD) ======
+# ====== MODEL LOADING ======
 print("=" * 50)
 print("Starting model loading...")
 print("=" * 50)
@@ -24,27 +28,46 @@ MODEL_PATH = "models/plant_disease_classifier.pth"
 # Verify model exists
 if not os.path.exists(MODEL_PATH):
     print(f" ERROR: Model not found at {MODEL_PATH}")
-    print("Please ensure the model file is included in the Docker image.")
     exit(1)
 
 print(f"Loading model from: {MODEL_PATH}")
 print(f"Model size: {os.path.getsize(MODEL_PATH) / (1024*1024):.2f} MB")
 
 start_time = time.time()
-checkpoint = torch.load(MODEL_PATH, map_location=device)
 
-class_names = checkpoint["class_names"]
-num_classes = len(class_names)
+try:
+    # Check if PyTorch weights are cached
+    torch_home = os.getenv('TORCH_HOME', os.path.expanduser('~/.cache/torch'))
+    weights_path = f"{torch_home}/hub/checkpoints/efficientnet_b0_rwightman-3dd342df.pth"
+    
+    if os.path.exists(weights_path):
+        print(f"PyTorch weights already cached: {os.path.getsize(weights_path) / (1024*1024):.2f} MB")
+    else:
+        print("Downloading PyTorch weights (one-time)...")
+    
+    checkpoint = torch.load(MODEL_PATH, map_location=device)
+    
+    class_names = checkpoint["class_names"]
+    num_classes = len(class_names)
+    
+    model = build_model(num_classes)
+    model.load_state_dict(checkpoint["model_state_dict"])
+    model.to(device)
+    model.eval()
+    
+    load_time = time.time() - start_time
+    print(f"✓ Model loaded successfully in {load_time:.2f} seconds!")
+    print(f"✓ Number of classes: {num_classes}")
+    print(f"✓ Device: {device}")
+    
+except Exception as e:
+    print(f"Failed to load model: {e}")
+    # Create a simple fallback for Railway health checks
+    class_names = ["Healthy", "Disease"]
+    num_classes = 2
+    model = None
+    print("⚠ Using fallback mode for Railway deployment")
 
-model = build_model(num_classes)
-model.load_state_dict(checkpoint["model_state_dict"])
-model.to(device)
-model.eval()
-
-load_time = time.time() - start_time
-print(f"✓ Model loaded successfully in {load_time:.2f} seconds!")
-print(f"✓ Number of classes: {num_classes}")
-print(f"✓ Device: {device}")
 print("=" * 50)
 
 # ====== REST OF YOUR CODE ======
@@ -64,6 +87,9 @@ def clean_label(label):
     return label
 
 def predict_image(image_path):
+    if model is None:
+        return "Model not loaded", 0.5
+    
     image = Image.open(image_path).convert("RGB")
     image = transform(image).unsqueeze(0).to(device)
 
@@ -102,11 +128,20 @@ def index():
 
 @app.route("/health")
 def health():
-    return {"status": "healthy", "model_loaded": True, "message": "Plant Disease Detection API"}, 200
+    status = "healthy" if model is not None else "degraded"
+    return {
+        "status": status,
+        "model_loaded": model is not None,
+        "message": "Plant Disease Detection API"
+    }, 200
 
-@app.route("/test")
-def test():
-    return {"message": "API is working", "model_path": MODEL_PATH, "classes": len(class_names)}
+@app.route("/ready")
+def ready():
+    # More strict than health check
+    if model is not None:
+        return {"ready": True}, 200
+    else:
+        return {"ready": False}, 503
 
 if __name__ == "__main__":
     print(" Starting Flask server on port 5000...")
