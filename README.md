@@ -38,6 +38,36 @@ To improve real-world robustness, an **Unidentified** class was manually created
 2. Extract and copy the folder into: data/PlantVillage/
    
 ---
+##  System Architecture
+
+The system follows an end-to-end machine learning pipeline, from data ingestion to cloud deployment.
+
+```mermaid
+flowchart TD
+    A[User uploads leaf image] --> B[Flask Web Interface]
+    B --> C[Image Preprocessing<br/>(Resize, Normalize)]
+    C --> D[EfficientNet-B0 CNN]
+    D --> E[Softmax Classification]
+    E --> F[Predicted Class + Confidence]
+    F --> B
+
+    subgraph Model Training Pipeline
+        G[PlantVillage Dataset] --> H[Data Cleaning & EDA]
+        H --> I[Train / Validation Split]
+        I --> J[Transfer Learning<br/>EfficientNet-B0]
+        J --> K[Hyperparameter Tuning]
+        K --> L[Final Model]
+        L --> M[Saved Model<br/>.pth]
+    end
+
+    M --> D
+
+    subgraph Deployment
+        N[Docker Container] --> O[Railway Cloud Platform]
+        O --> B
+    end
+```
+---
 
 ## Demo Video 
 This video contained in the google drive link shows the demonstration of how the app works 
@@ -84,7 +114,7 @@ Multiple experiments were conducted:
 
 ---
 
-## 📈 Model Evaluation
+## Model Evaluation
 
 ### Classification Report
 ![Classification Report](asset/classification_report.png)
@@ -139,7 +169,8 @@ Model is saved to: models/plant_disease_classifier.pth
 A Dockerfile is provided to containerize the application.
 
 ### Build image
- --on bash
+on bash
+
 docker build -t plant-disease-app .
 
 docker run -p 5000:5000 plant-disease-app
@@ -173,7 +204,7 @@ Storage: Local container filesystem (model bundled inside image)
 
 ### Deployment Steps
 
-1️ Push Project to GitHub
+#### 1️ Push Project to GitHub
 
 Ensure the repository contains:
 
@@ -184,31 +215,31 @@ Ensure the repository contains:
 --templates/
 --static/
 
-2️ Create Railway Project
+#### 2️ Create Railway Project
 
-Go to https://railway.app
+   Go to https://railway.app
+   
+   Create a new project
+   Select Deploy from GitHub Repo
+   Choose the project repository
+   
+   Railway automatically:
+   
+   Detects the Dockerfile
+   Builds the image
+   Runs the container
 
-Create a new project
-Select Deploy from GitHub Repo
-Choose the project repository
 
-Railway automatically:
+#### 3️ Environment Configuration
 
-Detects the Dockerfile
-Builds the image
-Runs the container
-
-
-3️ Environment Configuration
-
-The following environment variables are configured automatically or inside the Dockerfile:
-
-PORT=5000
-HOST=0.0.0.0
-PYTHONUNBUFFERED=1
-TORCH_HOME=/tmp/torch
-
-Railway automatically maps the exposed port to a public URL.
+   The following environment variables are configured automatically or inside the Dockerfile:
+   
+   PORT=5000
+   HOST=0.0.0.0
+   PYTHONUNBUFFERED=1
+   TORCH_HOME=/tmp/torch
+   
+   Railway automatically maps the exposed port to a public URL.
 
 ---
 
@@ -220,7 +251,8 @@ Live Demo: https://plant-disease-detection-capstone1-production.up.railway.app/
 
 
 Users can:
-Upload a leaf image
-Receive predicted disease name (human-readable)
-See confidence score
+
+  - Upload a leaf image
+  - Receive predicted disease name (human-readable)
+  - See confidence score
 
