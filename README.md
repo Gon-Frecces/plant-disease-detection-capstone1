@@ -1,5 +1,9 @@
 # 🌿 Plant Disease Detection using Deep Learning
 
+## web app  
+The link to the railway hosted web app of the project (more below)
+https://plant-disease-detection-capstone1-production.up.railway.app/
+
 ##  Problem Description
 
 Plant diseases significantly reduce crop yield and quality, especially in regions where access to agricultural experts is limited. Farmers often rely on visual inspection, which is error-prone and subjective.
@@ -41,7 +45,7 @@ https://drive.google.com/file/d/13Q3nVva__DmW9_JR7QKxGPPvx3-oKUSo/view?usp=shari
 
 ---
 
-## 🔍 Exploratory Data Analysis (EDA)
+##  Exploratory Data Analysis (EDA)
 
 EDA was performed in `notebook.ipynb` and includes:
 
@@ -51,7 +55,7 @@ EDA was performed in `notebook.ipynb` and includes:
 - RGB channel distribution
 - Dataset imbalance observations
 
-## 🧠 Model Training
+##  Model Training
 
 ### Architecture
 - Backbone: **efficientnet_b0 (transfer learning)**
@@ -115,7 +119,7 @@ Multiple experiments were conducted:
 
 Model is saved to: models/plant_disease_classifier.pth
 
-
+---
 
 ##  Model Deployment
 
@@ -128,7 +132,7 @@ Model is saved to: models/plant_disease_classifier.pth
   - Image preview
   - Clean class name formatting
 
--
+---
 
 ## Containerization
 
@@ -137,6 +141,86 @@ A Dockerfile is provided to containerize the application.
 ### Build image
  --on bash
 docker build -t plant-disease-app .
+
 docker run -p 5000:5000 plant-disease-app
 
+---
+
+## Cloud deployment using Railway service
+The application is deployed to the cloud using Railway, a modern Platform-as-a-Service (PaaS) that supports Docker-based deployments directly from GitHub repositories.
+
+### Why Railway?
+
+Simple GitHub integration
+
+Native Dockerfile support
+
+Automatic builds and redeployments
+
+Free tier suitable for academic projects and demos
+
+### Deployment Architecture
+
+Source: GitHub repository
+
+Build: Dockerfile-based image build
+
+Runtime: Flask application (Python 3.10, CPU-only PyTorch)
+
+Model Loading: Pretrained EfficientNet model loaded at startup
+
+Storage: Local container filesystem (model bundled inside image)
+
+### Deployment Steps
+
+1️ Push Project to GitHub
+
+Ensure the repository contains:
+
+--Dockerfile
+--predict.py
+--requirements.txt
+--models/plant_disease_classifier.pth
+--templates/
+--static/
+
+2️ Create Railway Project
+
+Go to https://railway.app
+
+Create a new project
+Select Deploy from GitHub Repo
+Choose the project repository
+
+Railway automatically:
+
+Detects the Dockerfile
+Builds the image
+Runs the container
+
+
+3️ Environment Configuration
+
+The following environment variables are configured automatically or inside the Dockerfile:
+
+PORT=5000
+HOST=0.0.0.0
+PYTHONUNBUFFERED=1
+TORCH_HOME=/tmp/torch
+
+Railway automatically maps the exposed port to a public URL.
+
+---
+
+## Live Application
+
+The deployed application is accessible via the Railway-generated public URL:
+
+Live Demo: https://plant-disease-detection-capstone1-production.up.railway.app/
+
+
+Users can:
+Upload a leaf image
+Receive predicted disease name (human-readable)
+See confidence score
 
