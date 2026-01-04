@@ -183,23 +183,23 @@ The application is deployed to the cloud using Railway, a modern Platform-as-a-S
 
 ### Why Railway?
 
-Simple GitHub integration
+- Simple GitHub integration
 
-Native Dockerfile support
+- Native Dockerfile support
 
-Automatic builds and redeployments
+- Automatic builds and redeployments
 
-Free tier suitable for academic projects and demos
+- Free tier suitable for academic projects and demos
 
 ### Deployment Architecture
 
-Source: GitHub repository
+- Source: GitHub repository
 
-Build: Dockerfile-based image build
+- Build: Dockerfile-based image build
 
-Runtime: Flask application (Python 3.10, CPU-only PyTorch)
+- Runtime: Flask application (Python 3.10, CPU-only PyTorch)
 
-Model Loading: Pretrained EfficientNet model loaded at startup
+- Model Loading: Pretrained EfficientNet model loaded at startup
 
 Storage: Local container filesystem (model bundled inside image)
 
@@ -209,26 +209,26 @@ Storage: Local container filesystem (model bundled inside image)
 
 Ensure the repository contains:
 
---Dockerfile
---predict.py
---requirements.txt
---models/plant_disease_classifier.pth
---templates/
---static/
+- Dockerfile
+- predict.py
+- requirements.txt
+- models/plant_disease_classifier.pth
+- templates/
+- static/
 
 #### 2️ Create Railway Project
 
    Go to https://railway.app
    
-   Create a new project
-   Select Deploy from GitHub Repo
-   Choose the project repository
+   - Create a new project
+   - Select Deploy from GitHub Repo
+   - Choose the project repository
    
    Railway automatically:
    
-   Detects the Dockerfile
-   Builds the image
-   Runs the container
+   - Detects the Dockerfile
+   - Builds the image
+   - Runs the container
 
 
 #### 3️ Environment Configuration
