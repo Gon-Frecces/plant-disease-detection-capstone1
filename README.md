@@ -38,26 +38,26 @@ To improve real-world robustness, an **Unidentified** class was manually created
 2. Extract and copy the folder into: data/PlantVillage/
    
 ---
-##  System Architecture
+## System Architecture
 
 The system follows an end-to-end machine learning pipeline, from data ingestion to cloud deployment.
 
 ```mermaid
 flowchart TD
     A[User uploads leaf image] --> B[Flask Web Interface]
-    B --> C[Image Preprocessing<br/>(Resize, Normalize)]
+    B --> C[Image Preprocessing\nResize and Normalize]
     C --> D[EfficientNet-B0 CNN]
     D --> E[Softmax Classification]
-    E --> F[Predicted Class + Confidence]
+    E --> F[Prediction and Confidence]
     F --> B
 
-    subgraph Model Training Pipeline
-        G[PlantVillage Dataset] --> H[Data Cleaning & EDA]
-        H --> I[Train / Validation Split]
-        I --> J[Transfer Learning<br/>EfficientNet-B0]
+    subgraph Model_Training_Pipeline
+        G[PlantVillage Dataset] --> H[Data Cleaning and EDA]
+        H --> I[Train Validation Split]
+        I --> J[Transfer Learning EfficientNet-B0]
         J --> K[Hyperparameter Tuning]
-        K --> L[Final Model]
-        L --> M[Saved Model<br/>.pth]
+        K --> L[Final Trained Model]
+        L --> M[Saved Model .pth]
     end
 
     M --> D
@@ -66,6 +66,7 @@ flowchart TD
         N[Docker Container] --> O[Railway Cloud Platform]
         O --> B
     end
+
 ```
 ---
 
